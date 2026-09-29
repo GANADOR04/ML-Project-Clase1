@@ -1,0 +1,28 @@
+[project]
+name = "ml-project-template"
+version = "0.2.0"
+description = "Template estándar para proyectos de Machine Learning (MUIA 2027) con uv"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "scikit-learn>=1.6.0",
+  "pyyaml>=6.0.2",
+  "numpy>=2.0.0",
+  "joblib>=1.4.0"
+]
+
+[dependency-groups]
+dev = [
+  "pytest>=8.0.0",
+  "ruff>=0.9.0",
+  "jupyterlab>=4.3.0",
+  "ipykernel>=6.29.0"
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"

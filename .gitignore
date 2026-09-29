@@ -1,0 +1,39 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Virtual environments & secrets
+.venv/
+env/
+venv/
+ENV/
+.env
+.env.*
+!.env.example
+
+# Caches de herramientas de test & linters
+.pytest_cache/
+.ruff_cache/
+
+# Datos locales y ejecuciones (solo mantener .gitkeep)
+data/*
+!data/.gitkeep
+runs/*
+!runs/.gitkeep
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# Archivos de sistema & IDE
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json

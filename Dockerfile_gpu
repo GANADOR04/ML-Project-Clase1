@@ -1,0 +1,47 @@
+# syntax=docker/dockerfile:1.7
+
+##############################
+# 🐳 Etapa con GPU + CUDA + uv
+##############################
+FROM nvidia/cuda:12.4.1-cudnn-runtime-ubuntu22.04
+
+# Paquetes base y utilidades
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    make curl ca-certificates git build-essential python3 python3-venv \
+ && rm -rf /var/lib/apt/lists/*
+
+# Instalar uv directamente con el instalador oficial
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+ENV PATH="/root/.local/bin:${PATH}"
+
+# Opciones recomendadas para uv
+ENV UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy \
+    UV_PYTHON_PREFERENCE=only-managed
+
+WORKDIR /workspace
+
+# Copiar metadatos y sincronizar dependencias
+COPY pyproject.toml uv.lock* Makefile ./
+
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --frozen --no-cache || uv sync --no-cache
+
+ENV PATH="/workspace/.venv/bin:${PATH}"
+
+# PyTorch con aceleracion CUDA
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv pip install --index-url https://download.pytorch.org/whl/cu124 torch torchvision torchaudio
+
+# Copiar codigo fuente y configuraciones
+COPY src/ ./src/
+COPY configs/ ./configs/
+
+# Usuario no root para sandbox seguro de agentes
+RUN groupadd -r app && useradd -r -g app -m app && \
+    mkdir -p /workspace/runs && \
+    chown -R app:app /workspace
+USER app
+
+# Comando por defecto: smoke test y entrenamiento
+CMD ["uv", "run", "python", "-m", "src.app.train"]
